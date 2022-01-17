@@ -11,11 +11,11 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-        - { name: Windows VS2017, os: windows-2016   }
-        - { name: Windows VS2019, os: windows-latest }
-        - { name: Linux GCC,      os: ubuntu-latest  }
-        - { name: Linux Clang,    os: ubuntu-latest, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
-        - { name: MacOS XCode,    os: macos-latest,  flags: -DSFML_BUILD_FRAMEWORKS=FALSE, prefix: sudo }
+        - { name: Windows VS2017, os: windows-2016,   artifacts-name: windown-vs2017 }
+        - { name: Windows VS2019, os: windows-latest, artifacts-name: windown-vs2019 }
+        - { name: Linux GCC,      os: ubuntu-latest,  artifacts-name: linux-gcc }
+        - { name: Linux Clang,    os: ubuntu-latest,  artifacts-name: linux-clang, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
+        - { name: MacOS XCode,    os: macos-latest,   artifacts-name: macos-xcode, flags: -DSFML_BUILD_FRAMEWORKS=FALSE -DCMAKE_OSX_ARCHITECTURES=arm64\;x86_64, prefix: sudo }
     steps:
     - name: Install Linux Dependencies
       if: runner.os == 'Linux'
@@ -25,13 +25,13 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: SFML/SFML
-        ref: 2.5.1
+        ref: 0fe1626a1fe8bf493a98958b1d3ef9559ce7c36c
         path: SFML
 
     - name: Configure SFML CMake
       shell: bash
       run: cmake -S $GITHUB_WORKSPACE/SFML -B $GITHUB_WORKSPACE/SFML/build -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/SFML/install -DBUILD_SHARED_LIBS=TRUE -DSFML_BUILD_EXAMPLES=FALSE -DSFML_BUILD_TEST_SUITE=FALSE -DCMAKE_VERBOSE_MAKEFILE=ON ${{matrix.platform.flags}}
-    
+
     - name: Build SFML
       shell: bash
       run: ${{matrix.platform.prefix}} cmake --build $GITHUB_WORKSPACE/SFML/build --config Release --target install
@@ -48,3 +48,8 @@ jobs:
     - name: Build CSFML
       shell: bash
       run: cmake --build $GITHUB_WORKSPACE/CSFML/build --config Release --target install
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: csmfl-${{ matrix.platform.artifacts-name }}
+        path: CSFML/install
