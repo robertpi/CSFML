@@ -49,6 +49,51 @@ jobs:
       shell: bash
       run: cmake --build $GITHUB_WORKSPACE/CSFML/build --config Release --target install
 
+    - name: Build CSFML
+      shell: bash
+      run: cmake --build $GITHUB_WORKSPACE/CSFML/build --config Release --target install
+
+    - name: Install .NET
+      if: runner.os == 'macOS'
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: check dir ../../install/lib
+      shell: bash
+      if: runner.os == 'macOS'
+      working-directory: ./CSFML/test/dotnet-interop
+      run: ls ../../install/lib
+
+    - name: check dir ../../../SFML/install/lib
+      shell: bash
+      if: runner.os == 'macOS'
+      working-directory: ./CSFML/test/dotnet-interop
+      run: ls ../../../SFML/install/lib
+
+    - name: check ../../../SFML/install/lib/libsfml-system.2.5.dylib
+      shell: bash
+      if: runner.os == 'macOS'
+      working-directory: ./CSFML/test/dotnet-interop
+      run: otool -l ../../../SFML/install/lib/libsfml-system.2.5.dylib
+
+    - name: check /usr/lib/
+      if: runner.os == 'macOS'
+      working-directory: ./CSFML/test/dotnet-interop
+      run: ls /usr/lib/
+
+    - name: .NET build
+      shell: bash
+      if: runner.os == 'macOS'
+      working-directory: ./CSFML/test/dotnet-interop
+      run: DYLD_PRINT_LIBRARIES=1 DYLD_FALLBACK_LIBRARY_PATH=../../install/lib:../../../SFML/install/lib dotnet build
+
+    - name: .NET run
+      shell: bash
+      if: runner.os == 'macOS'
+      working-directory: ./CSFML/test/dotnet-interop
+      run: DYLD_PRINT_LIBRARIES=1 DYLD_FALLBACK_LIBRARY_PATH=../../install/lib:../../../SFML/install/lib dotnet run --no-build
+
     - uses: actions/upload-artifact@v2
       with:
         name: csmfl-${{ matrix.platform.artifacts-name }}
