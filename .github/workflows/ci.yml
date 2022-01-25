@@ -86,13 +86,13 @@ jobs:
       shell: bash
       if: runner.os == 'macOS'
       working-directory: ./CSFML/test/dotnet-interop
-      run: DYLD_PRINT_LIBRARIES=1 DYLD_FALLBACK_LIBRARY_PATH=../../install/lib:../../../SFML/install/lib dotnet build
+      run: dotnet build
 
     - name: .NET run
       shell: bash
       if: runner.os == 'macOS'
       working-directory: ./CSFML/test/dotnet-interop
-      run: DYLD_PRINT_LIBRARIES=1 DYLD_FALLBACK_LIBRARY_PATH=../../install/lib:../../../SFML/install/lib dotnet run --no-build
+      run: DYLD_PRINT_INITIALIZERS=1 DYLD_PRINT_LIBRARIES=1 DYLD_FALLBACK_LIBRARY_PATH=../../install/lib:../../../SFML/install/lib dotnet run --no-build
 
     - uses: actions/upload-artifact@v2
       with:
