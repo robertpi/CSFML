@@ -21,6 +21,10 @@ jobs:
       if: runner.os == 'Linux'
       run: sudo apt-get update && sudo apt-get install libxrandr-dev libxcursor-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev
 
+    - name: Install macOS Dependencies
+      if: runner.os == 'macOS'
+      run: brew install openal-soft
+
     - name: Checkout SFML
       uses: actions/checkout@v2
       with:
@@ -92,7 +96,7 @@ jobs:
       shell: bash
       if: runner.os == 'macOS'
       working-directory: ./CSFML/test/dotnet-interop
-      run: DYLD_PRINT_BINDINGS=1 DYLD_PRINT_APIS=1 DYLD_PRINT_LIBRARIES_POST_LAUNCH=1 DYLD_PRINT_INITIALIZERS=1 DYLD_PRINT_LIBRARIES=1 DYLD_FALLBACK_LIBRARY_PATH=../../install/lib:../../../SFML/install/lib dotnet run --no-build
+      run: DYLD_PRINT_BINDINGS=1 DYLD_PRINT_APIS=1 DYLD_PRINT_LIBRARIES_POST_LAUNCH=1 DYLD_PRINT_INITIALIZERS=1 DYLD_PRINT_LIBRARIES=1 DYLD_FALLBACK_LIBRARY_PATH=../../install/lib:../../../SFML/install/lib:/usr/local/opt/openal-soft/lib dotnet run --no-build
 
     - uses: actions/upload-artifact@v2
       with:
